@@ -6,4 +6,5 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY . /app/
 RUN apt update -y
 RUN apt install zip -y
+RUN docker-php-ext-install mysqli
 RUN composer install --ignore-platform-req=ext-sockets

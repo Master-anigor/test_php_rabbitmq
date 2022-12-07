@@ -6,10 +6,16 @@ use PhpAmqpLib\Message\AMQPMessage;
 $connection = new AMQPStreamConnection('rabbitmq', 5672, 'guest', 'guest');
 $channel = $connection->channel();
 
-$channel->queue_declare('hello', false, false, false, false);
+$channel->queue_declare('test', false, false, false, false);
 
-$msg = new AMQPMessage('Hello World!');
-$channel->basic_publish($msg, '', 'hello');
+if (file_exists('urls.txt')){
+    $file = fopen(__DIR__ . '/urls.txt', 'r');
+    while (!feof($file)) {
+        $msg = new AMQPMessage(json_encode(["url" => fgets($file), "wait" => 30]));
+        $channel->basic_publish($msg, '', 'test');
+    }
+    fclose($file);
+}
 
 $channel->close();
 $connection->close();

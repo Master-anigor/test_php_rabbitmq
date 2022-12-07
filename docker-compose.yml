@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.3"
 services:
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -7,6 +7,7 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+
   mysql:
     image: mysql:latest
     container_name: 'mysql'
@@ -21,12 +22,20 @@ services:
 
   php_producer:
     build: ./Producer/.
+    command: php index.php
     container_name: 'Producer'
     depends_on:
       - rabbitmq
-    links:
+    volumes:
+      - './Producer:/var/www/html'
+  
+  php_consumer:
+    build: ./Consumer/.
+    command: php index.php
+    container_name: 'Consumer'
+    depends_on:
       - rabbitmq
       - mysql
     volumes:
-      - './Producer:/var/www/html'
+      - './Consumer:/var/www/html'
     
